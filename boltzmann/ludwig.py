@@ -57,11 +57,13 @@ def display_results(mat_lnk, nb_cmbn, inputs, outputs, fees, intrafees, efficien
             print(mat_lnk)
 
         print('\nDeterministic links :')
+
         for i in range(0, len(outputs)):
             for j in range(0, len(inputs)):
                 if (mat_lnk[i,j] == nb_cmbn) and mat_lnk[i,j] != 0 :
+                    links = '%s & %s are deterministically linked' % (inputs[j], outputs[i])
                     print('%s & %s are deterministically linked' % (inputs[j], outputs[i]))
-
+                    return links
 
 
 
@@ -108,7 +110,7 @@ def main(txids, rpc, testnet, smartbit, options=['PRECHECK', 'LINKABILITY', 'MER
         (mat_lnk, nb_cmbn, inputs, outputs, fees, intrafees, efficiency) = process_tx(tx, options, max_duration, max_txos, max_cj_intrafees_ratio)
 
         # Displays the results
-        display_results(mat_lnk, nb_cmbn, inputs, outputs, fees, intrafees, efficiency)
+        return display_results(mat_lnk, nb_cmbn, inputs, outputs, fees, intrafees, efficiency)
 
 
 
