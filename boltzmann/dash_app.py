@@ -10,6 +10,12 @@ from ludwig import *
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
 
+theme = {
+	'dark': True, 
+	'detail': '#007439',
+    'primary': '#00EA64', 
+    'secondary': '#6E6E6E'}
+
 stylesheet = [
 	{
 		'selector': '.green',
@@ -29,7 +35,7 @@ stylesheet = [
 
 app.layout = html.Div(
 	
-	children=[ 
+	children=[
 
 	html.H1(children='Tx Entropy'),
 
@@ -39,6 +45,55 @@ app.layout = html.Div(
 
 	html.Div([ 
 		html.Div([
+			daq.DarkThemeProvider(theme= theme, children= [
+				dcc.Checklist(
+				options=[
+					{'label': 'PreCheck', 'value': 'PRECHECK'}, 
+					{'label': 'Compute Entropy?', 'value': 'LINKABILITY'}, 
+					{'label': 'Merge inputs?', 'value': 'MERGE_INPUTS'},
+					{'label': 'Merge outputs?', 'value': 'MERGE_OUTPUTS'},
+					{'label': 'Merge fees?', 'value': 'MERGE_FEES'}
+				], value=['PRECHECK', 'LINKABILITY', 'MERGE_INPUTS'] 
+			)]),
+			daq.DarkThemeProvider(theme= theme, children= [
+			daq.Knob(
+				id='duration-input',
+				label='Max processing seconds.',
+				labelPosition='bottom',
+				min=0,
+				max=1000,
+				value=600
+			)]),
+			daq.DarkThemeProvider(theme= theme, children= [
+			daq.Knob(
+				id='maxtxnb-input',
+				label='Max Number of Txs to process.',
+				labelPosition='bottom',
+				min=0,
+				max=250,
+				value=12
+			)]),
+			daq.DarkThemeProvider(theme= theme, children= [
+			daq.Knob(
+				id='cjmaxfeeratio-input',
+				label='Max intrafees paid by taker (%).',
+				labelPosition='bottom',
+				min=0,
+				max=99,
+				value=40
+			)])
+		], style={'margin': 'auto', 'margin-right': 0, 'display': 'flex', 'width': '45%', 'margin-bottom': 'inherit'}),
+#		html.Div([
+#			dcc.Checklist(
+#				options=[
+#					{'label': 'PreCheck', 'value': 'PRECHECK'}, 
+#					{'label': 'Compute Entropy?', 'value': 'LINKABILITY'}, 
+#					{'label': 'Merge inputs?', 'value': 'MERGE_INPUTS'},
+#					{'label': 'Merge outputs?', 'value': 'MERGE_OUTPUTS'},
+#					{'label': 'Merge fees?', 'value': 'MERGE_FEES'}
+#				], value=['PRECHECK', 'LINKABILITY', 'MERGE_INPUTS'] )
+#			], style={'display': 'block', 'width': '10%', 'margin': 'auto'}),
+		html.Div([
 			dcc.Input(
 				id='tx-input',
 		    	placeholder='Enter a tx id',
@@ -46,51 +101,24 @@ app.layout = html.Div(
 		    	size='75',
 		    	debounce=True,
 		    	value='00cd588eb04f6bdef3644ec17dfc3622b85212d52021ffaf020ef7bcada1ae63'
-			)], style={'margin-bottom': 'inherit'} ),
-		html.Div([
-			daq.NumericInput(
-				id='duration-input',
-				label='Max processing seconds.',
-				labelPosition='bottom',
-				min=0,
-				value=600
-			)], style={'margin-bottom': 'inherit'} ),
-		html.Div([
-			daq.NumericInput(
-				id='maxtxnb-input',
-				label='Max Number of Txs to process.',
-				labelPosition='bottom',
-				min=0,
-				max=250,
-				value=12
-			)], style={'margin-bottom': 'inherit'} ),
-		html.Div([
-			daq.NumericInput(
-				id='cjmaxfeeratio-input',
-				label='Max intrafees paid by taker (%).',
-				labelPosition='bottom',
-				min=0,
-				max=99,
-				value=40
-			)], style={'margin-bottom': 'inherit', 'align': 'left'} ),
+			)], style={'margin': 'auto', 'margin-bottom': 'inherit', 'display': 'block', 'width': '40%'} ),
 		html.Div([
 			cyto.Cytoscape(
 				id='tx-map',
 				stylesheet=stylesheet,
 				elements=[],
-				)], style={'padding': 0}),
-		html.Div([	
+				), 
 			dcc.Textarea(
 				id='output-box',
 				draggable=True,
 				rows=15,
-				cols=100
+				cols=65
 				)
-			], style={'margin-bottom': 'inherit'} ), 
+			], style={'padding': 0, 'width': '600px', 'background-color': 'grey', 'margin-bottom': 'inherit', 'display': 'block', 'margin': 'auto'}), 
 
 		], style={'margin-top': 50, 'margin-bottom': 25}),
 
-	], style={'padding': 20,'display': 'inline-block'})
+	], style={'padding': 20,'display': 'block', 'width': '100vw'})
 
 def build_elements(tx_links): 
 	elements = [] 
@@ -225,7 +253,7 @@ def main(txids, rpc, testnet, smartbit, options=['PRECHECK', 'LINKABILITY', 'MER
 
 def update_fig(txid, duration, maxtxnb, cjmaxfee):
 
-	elements = main(txids=[txid], rpc=False, testnet=False, smartbit=False, options=['LINKABILITY'], max_duration=duration, max_txos=maxtxnb, max_cj_intrafees_ratio=cjmaxfee)
+	elements = main(txids=[txid], rpc=False, testnet=False, smartbit=False, options=['LINKABILITY', 'MERGE_INPUTS'], max_duration=duration, max_txos=maxtxnb, max_cj_intrafees_ratio=cjmaxfee)
 	return elements
 
 if __name__ == '__main__': 
