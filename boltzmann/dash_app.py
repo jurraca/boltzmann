@@ -8,7 +8,7 @@ import dash_daq as daq
 import dash_cytoscape as cyto 
 from ludwig import *
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
+app = dash.Dash(__name__) 
 
 theme = {
 	'dark': True, 
@@ -34,8 +34,9 @@ stylesheet = [
 ]
 
 app.layout = html.Div(
-	
+	className='body',
 	children=[
+
 
 	html.H1(children='Tx Entropy'),
 
@@ -43,20 +44,14 @@ app.layout = html.Div(
 		Boltzmann entropy for Bitcoin transactions.
 		'''),
 
-	html.Div([ 
-		html.Div([
-			daq.DarkThemeProvider(theme= theme, children= [
-				dcc.Checklist(
-				options=[
-					{'label': 'PreCheck', 'value': 'PRECHECK'}, 
-					{'label': 'Compute Entropy?', 'value': 'LINKABILITY'}, 
-					{'label': 'Merge inputs?', 'value': 'MERGE_INPUTS'},
-					{'label': 'Merge outputs?', 'value': 'MERGE_OUTPUTS'},
-					{'label': 'Merge fees?', 'value': 'MERGE_FEES'}
-				], value=['PRECHECK', 'LINKABILITY', 'MERGE_INPUTS'] 
-			)]),
+	html.Div(
+		className="grid-container",
+		children = [ 
+		html.Div(
+			className="dials", children=[
 			daq.DarkThemeProvider(theme= theme, children= [
 			daq.Knob(
+				#className='knob1',
 				id='duration-input',
 				label='Max processing seconds.',
 				labelPosition='bottom',
@@ -66,6 +61,7 @@ app.layout = html.Div(
 			)]),
 			daq.DarkThemeProvider(theme= theme, children= [
 			daq.Knob(
+				#className='knob2',
 				id='maxtxnb-input',
 				label='Max Number of Txs to process.',
 				labelPosition='bottom',
@@ -75,14 +71,27 @@ app.layout = html.Div(
 			)]),
 			daq.DarkThemeProvider(theme= theme, children= [
 			daq.Knob(
+				#className='knob3',
 				id='cjmaxfeeratio-input',
 				label='Max intrafees paid by taker (%).',
 				labelPosition='bottom',
 				min=0,
 				max=99,
 				value=40
-			)])
-		], style={'margin': 'auto', 'margin-right': 0, 'display': 'flex', 'width': '45%', 'margin-bottom': 'inherit'}),
+			)]), 
+			daq.DarkThemeProvider(theme= theme, children= [
+				dcc.Checklist(
+				#className='knob4',
+				options=[
+					{'label': 'PreCheck', 'value': 'PRECHECK'}, 
+					{'label': 'Compute Entropy?', 'value': 'LINKABILITY'}, 
+					{'label': 'Merge inputs?', 'value': 'MERGE_INPUTS'},
+					{'label': 'Merge outputs?', 'value': 'MERGE_OUTPUTS'},
+					{'label': 'Merge fees?', 'value': 'MERGE_FEES'}
+				], value=['PRECHECK', 'LINKABILITY', 'MERGE_INPUTS'], 
+				style={'display': 'block', 'width': '25%'}
+			)]),
+		], style={'margin-right': 0, 'display': 'block', 'margin-bottom': 'inherit'}),
 #		html.Div([
 #			dcc.Checklist(
 #				options=[
@@ -93,32 +102,37 @@ app.layout = html.Div(
 #					{'label': 'Merge fees?', 'value': 'MERGE_FEES'}
 #				], value=['PRECHECK', 'LINKABILITY', 'MERGE_INPUTS'] )
 #			], style={'display': 'block', 'width': '10%', 'margin': 'auto'}),
-		html.Div([
+		html.Div(
+			className="tx-input", 
+			children=[
 			dcc.Input(
 				id='tx-input',
 		    	placeholder='Enter a tx id',
 		    	type='text',
-		    	size='75',
+		    	#size='75',
 		    	debounce=True,
+		    	style={'background-color': 'inherit', 'color': '#00ff00'},
 		    	value='00cd588eb04f6bdef3644ec17dfc3622b85212d52021ffaf020ef7bcada1ae63'
-			)], style={'margin': 'auto', 'margin-bottom': 'inherit', 'display': 'block', 'width': '40%'} ),
-		html.Div([
+			)] ),
+		html.Div(
+			className="graph",
+			children=[
 			cyto.Cytoscape(
 				id='tx-map',
 				stylesheet=stylesheet,
-				elements=[],
+				elements=[]
 				), 
-			dcc.Textarea(
-				id='output-box',
-				draggable=True,
-				rows=15,
-				cols=65
-				)
-			], style={'padding': 0, 'width': '600px', 'background-color': 'grey', 'margin-bottom': 'inherit', 'display': 'block', 'margin': 'auto'}), 
+#			dcc.Textarea(
+#				id='output-box',
+#				draggable=True,
+#				rows=15,
+#				cols=65
+#				)
+			]), 
+		
+		]), 
 
-		], style={'margin-top': 50, 'margin-bottom': 25}),
-
-	], style={'padding': 20,'display': 'block', 'width': '100vw'})
+	])
 
 def build_elements(tx_links): 
 	elements = [] 
