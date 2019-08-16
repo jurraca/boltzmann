@@ -34,7 +34,7 @@ stylesheet = [
 ]
 
 app.layout = html.Div(
-	className='body',
+	className='main',
 	children=[
 
 

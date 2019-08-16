@@ -1,9 +1,5 @@
-* {
+.main { 
 	background-color: #000000;
-}
-
-.body { 
-	background-color: inherit;
 	display: grid;  
 	width: 100vw; 
 	background-color: black; 
@@ -65,13 +61,3 @@
 .knob4 { 
 	grid-area: 2 / 4 / 2 /4;
  }
-
-.green {
-	background-color: green;
-	line-color: green;
-		
-	}
-
-.red { 
-	background-color: red; 
-	line-color: red; }
